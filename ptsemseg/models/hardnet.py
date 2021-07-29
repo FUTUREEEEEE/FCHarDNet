@@ -266,7 +266,7 @@ class hardnet(nn.Module):
 
         self.base = nn.ModuleList([])
         self.base.append (
-             ConvLayer(in_channels=3, out_channels=first_ch[0], kernel=3,
+             ConvLayer(in_channels=4, out_channels=first_ch[0], kernel=3,
                        stride=2) )
         self.base.append ( ConvLayer(first_ch[0], first_ch[1],  kernel=3) )
         self.base.append ( ConvLayer(first_ch[1], first_ch[2],  kernel=3, stride=2) )
