@@ -26,7 +26,7 @@ import time
 import torch
 from S2R import DSAModules
 import numpy as np
-from S2R.utils import *
+
 import torch.nn as nn
 from S2R.models import modules
 import torchvision.utils as vutils
@@ -125,8 +125,18 @@ def train(cfg, writer, logger):
     model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
     model.apply(weights_init)
     pretrained_path='weights/hardnet_petite_base.pth'
-    weights = torch.load(pretrained_path)
-    model.module.base.load_state_dict(weights)
+    pretrained_dict = torch.load(pretrained_path)
+    #model.module.base.load_state_dict(pretrained_path,False)
+    #model.module.base.load_state_dict({k.replace(‘module.’,’’):v for k,v in torch.load(pretrained_path).items()})
+    model_dict = model.module.base.state_dict()
+    #pretrained_dict = torch.load('file.pth.tar')
+    # 1. filter out unnecessary keys
+    pretrained_dict = {k: v for k, v in pretrained_dict.items() if k.find('fc')==1}
+    # 2. overwrite entries in the existing state dict
+    model_dict.update(pretrained_dict)
+    # 3. load the new state dict
+    model.module.base.load_state_dict(model_dict)
+
 
     # Setup optimizer, lr_scheduler and loss function
     optimizer_cls = get_optimizer(cfg)
@@ -340,7 +350,7 @@ if __name__ == "__main__":
         cfg = yaml.load(fp)
 
     run_id = random.randint(1, 100000)
-    logdir = os.path.join("runs", os.path.basename(args.config)[:-4], "cur")
+    logdir = "/content/drive/MyDrive/S2Rnet/hardnet/hardnetS2R"
     writer = SummaryWriter(log_dir=logdir)
 
     print("RUNDIR: {}".format(logdir))
