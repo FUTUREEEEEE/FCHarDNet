@@ -271,7 +271,7 @@ class hardnet(nn.Module):
         self.base.append ( ConvLayer(first_ch[0], first_ch[1],  kernel=3) )
         self.base.append ( ConvLayer(first_ch[1], first_ch[2],  kernel=3, stride=2) )
         self.base.append ( ConvLayer(first_ch[2], first_ch[3],  kernel=3) )
-
+        
         skip_connection_channel_counts = []
         ch = first_ch[3]
         for i in range(blks):
